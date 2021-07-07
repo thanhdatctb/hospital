@@ -5,7 +5,12 @@ import com.assignment.entity.employee.Employee;
 import com.assignment.entity.employee.healthcare.Doctor;
 import com.assignment.entity.employee.healthcare.Nurse;
 import com.assignment.entity.employee.healthcare.Staff;
+import com.assignment.entity.floor.Floor;
+import com.assignment.entity.patient.DiseaseType;
 import com.assignment.entity.patient.Patient;
+import com.assignment.entity.room.OperationRoom;
+import com.assignment.entity.room.patient.SinglePatientRoom;
+import com.assignment.entity.service.Service;
 import com.assignment.factory.EmployeeFactory;
 import com.assignment.stubdata.EmployeeStubData;
 
@@ -20,8 +25,8 @@ public class HRActivitiesScreen extends Main implements IFacadeScreen {
             System.out.println("2. Search and Dismiss employee");
             System.out.println("3. Exit patient and create invoice");
             System.out.println("4. Check list request recruit");
-
-
+            System.out.println("5. Move patient to room");
+            System.out.println("6. Create Bill");
             System.out.println("0. Back to main menu");
             System.out.println("--------------------------------\n");
 
@@ -61,8 +66,8 @@ public class HRActivitiesScreen extends Main implements IFacadeScreen {
                     break;
                 case 4:
                     int size = EmployeeStubData.recruitEmployeeList.size();
-                    System.out.println("You have " +size +" request recruit");
-                    for(Employee employee : EmployeeStubData.recruitEmployeeList){
+                    System.out.println("You have " + size + " request recruit");
+                    for (Employee employee : EmployeeStubData.recruitEmployeeList) {
                         if (employee instanceof Doctor) {
                             System.out.println("Recruit Doctor");
                         }
@@ -73,6 +78,76 @@ public class HRActivitiesScreen extends Main implements IFacadeScreen {
                             System.out.println("Recruit Staff");
                         }
                     }
+
+                case 5:
+                    System.out.println("Input patient id: ");
+                    patientId = input.nextInt();
+                    input.nextLine();
+                    Patient patient = patientDAO.findPatientById(patientId);
+                    while (patient == null) {
+                        System.out.println("Cannot find any Patient with id " + patientId + " .Please re-input or -1 to exit");
+                        id = input.nextInt();
+                        if (id == -1) {
+                            break;
+                        } else {
+                            patient = patientDAO.findPatientById(id);
+                            input.nextLine();
+                        }
+                    }
+                    if (patient != null) {
+                        System.out.println(" Found patient:  " + patient);
+                        System.out.println("Do you to assign doctor/nurse for this patient? (Y/N)");
+                        String answer = input.nextLine();
+                        if (answer.trim().equals("Y")) {
+                            doctorAssignment.assignPatient(patient);
+                            nurseAssignment.assignPatient(patient);
+                            Floor floor = new Floor(1, "test") {
+                                @Override
+                                public void setService(Service service) {
+                                    super.setService(service);
+                                }
+                            };
+                            if (patient.getDiseaseType() == DiseaseType.MEDICAL) {
+                                patient.setRoom(new SinglePatientRoom(floor, 1, patient.getName()));
+                            } else if (patient.getDiseaseType() == DiseaseType.OPERATION) {
+                                patient.setRoom(new OperationRoom(floor, 1, patient.getName()));
+                            }
+                            System.out.println(patient);
+                        } else if (answer.trim().equals("N")) {
+                            break;
+                        }
+                    }
+                    break;
+
+                case 6:
+                    System.out.println("Input patient id: ");
+                    patientId = input.nextInt();
+                    input.nextLine();
+                    patient = patientDAO.findPatientById(patientId);
+                    while (patient == null) {
+                        System.out.println("Cannot find any Patient with id " + patientId + " .Please re-input or -1 to exit");
+                        id = input.nextInt();
+                        if (id == -1) {
+                            break;
+                        } else {
+                            patient = patientDAO.findPatientById(id);
+                            input.nextLine();
+                        }
+                    }
+
+                    if (patient != null) {
+                        int bill = 50;
+                        if (patient.getDiseaseType() == DiseaseType.MEDICAL) {
+                            bill += 80;
+                        } else if (patient.getDiseaseType() == DiseaseType.OPERATION) {
+                            bill += 100;
+                        }
+                        System.out.println(patient);
+                        System.out.println("Your bill :" + bill);
+                        patientDAO.removePatient(patient);
+                    }
+
+                    break;
                 case 0:
                     loop = false;
                     System.out.println("Exiting Human Resource....");
@@ -89,4 +164,4 @@ public class HRActivitiesScreen extends Main implements IFacadeScreen {
     public void show() {
         printHRActivities();
     }
-}
+}//aaa

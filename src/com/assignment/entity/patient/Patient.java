@@ -2,6 +2,7 @@ package com.assignment.entity.patient;
 
 import com.assignment.entity.employee.healthcare.Doctor;
 import com.assignment.entity.employee.healthcare.Nurse;
+import com.assignment.entity.room.Room;
 
 public class Patient {
     int id;
@@ -11,6 +12,8 @@ public class Patient {
     boolean isHealed;
     Doctor doctor;
     Nurse nurse;
+    Room room;
+
 
     public Patient(int id, String name, int age, DiseaseType diseaseType, boolean isHealed) {
         this.id = id;
@@ -59,6 +62,17 @@ public class Patient {
         return nurse;
     }
 
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     @Override
     public String toString() {
@@ -67,6 +81,7 @@ public class Patient {
                 ", name='" + name + '\'' +
                 ", age=" + age +
                 ", diseaseType=" + diseaseType +
+                ", room=" + room +
                 ", isHealed=" + isHealed + "}" +
                 "\nThe assigned Doctor: " + doctor +
                 "\nThe assigned Nurse: " + nurse + "\n------End of Patient Info------\n";
